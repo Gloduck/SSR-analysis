@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>订阅解析</title>
+
+	<script src="./js/jquery.js"></script>
+	<script src="./js/base64.js"></script>
+	<script src="./js/easydialog.min.js"></script>
+
+	<script src="./js/qrcode.min.js"></script>
+	<link rel="stylesheet" href="./css/bootstrap.css">
+	<link rel="stylesheet" href="./css/easydialog.css">
+	<style>
+		.card {
+			margin: 1%;
+		}
+
+		div {
+			word-wrap: break-word;
+			word-break: normal;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="main">
+
+		<div class="container">
+
+			<div class="row" id="geturl">
+
+				<input type="url" name="url" id="url" class="form-control" required="required"
+					style="width: 80%;margin-right: 5%;" placeholder="请输入订阅地址或订阅内容，如果没有配置API环境请输入订阅内容，否则无法正确解析！">
+
+				<button type="button" class="btn btn-primary" id="submit" style="display: inline-block">提交</button>
+
+
+			</div>
+			<div class="row" id="card">
+
+			</div>
+
+			<div id="qrcode" style="display: none"></div>
+		</div>
+
+	</div>
+</body>
+<script>
+
+	/* 跨域接口API */
+	var api = "https://api.mxecy.cn/request.php?url=";
+
+
+
+	//点击弹出ssr链接
+	function link(obj) {
+		var ssr = $(obj).parent().parent().find(".link").text();
+		easyDialog.open({
+			container: {
+				header: 'SSR链接',
+				content: ssr
+			},
+			overlay: false
+		})
+	}
+	//点击弹出ssr二维码
+	var qrcodeimg = new QRCode(document.getElementById("qrcode"), {
+		width: 400,
+		height: 400
+	});
+	function qrcode(obj) {
+		var ssr = $(obj).parent().parent().find(".link").text();
+		qrcodeimg.clear();
+		qrcodeimg.makeCode(ssr);
+		easyDialog.open({
+			container: 'qrcode',
+			fixed: false
+		});
+	}
+	//随机图片
+	function randomImg() {
+		var img = [
+			"http://p1.qhimg.com/bdm/800_600_100/t01f95f85f3f4c2c938.jpg",
+			"http://p8.qhimg.com/bdm/800_600_100/t01a358e4063b3cd4d7.jpg",
+			"http://p3.qhimg.com/bdm/1024_768_85/t018dcb2c64adb2acfc.jpg",
+			"http://p8.qhimg.com/bdm/1024_768_85/t01a358e4063b3cd4d7.jpg",
+			"http://p3.qhimg.com/bdm/1024_768_85/t012bda365290ea311b.jpg",
+			"http://p7.qhimg.com/bdm/1024_768_85/t012460c7fdf2994e17.jpg",
+			"http://p9.qhimg.com/bdm/1024_768_85/t01ac86a5ab013c5ae2.jpg",
+			"http://p2.qhimg.com/bdm/1024_768_85/t01f3c58eaac22c8544.jpg",
+			"http://p4.qhimg.com/bdm/1024_768_85/t010cfb7547a56125f3.jpg",
+			"http://p6.qhimg.com/bdm/1024_768_85/t01dda0945887598aff.jpg",
+			"http://p9.qhimg.com/bdm/1024_768_85/t0141378f393d7258cc.jpg",
+			"http://p6.qhimg.com/bdm/1024_768_85/t01d13a161bb50a2d14.jpg",
+			"http://p0.qhimg.com/bdm/1024_768_85/t01f95967f349cfe55a.jpg",
+			"http://p6.qhimg.com/bdm/1024_768_85/t01ff2aa6bc627f9c90.jpg",
+			"http://p7.qhimg.com/bdm/1024_768_85/t01376c44ab1dec59a2.jpg",
+			"http://p3.qhimg.com/bdm/1024_768_85/t01b92be84af8f61a5d.jpg",
+			"http://p1.qhimg.com/bdm/1024_768_85/t010f84bb7512a742a3.jpg",
+			"http://p8.qhimg.com/bdm/1024_768_85/t01296e28f318001c9b.jpg",
+			"http://p6.qhimg.com/bdm/1024_768_85/t0140d34bd242a30966.jpg",
+			"http://p8.qhimg.com/bdm/1024_768_85/t01fab912063ac4e4de.jpg",
+			"http://p8.qhimg.com/bdm/1024_768_85/t0197520a0763752dbb.jpg",
+			"http://p7.qhimg.com/bdm/1024_768_85/t01c3dca97966573c74.jpg",
+			"http://p6.qhimg.com/bdm/1024_768_85/t019584a6d28937d730.jpg",
+			"http://p2.qhimg.com/bdm/1024_768_85/t011687065d1b337852.jpg",
+			"http://p2.qhimg.com/bdm/1024_768_85/t0178848e59d7756a01.jpg",
+			"http://p0.qhimg.com/bdm/1024_768_85/t01226901e2761f307c.jpg",
+			"http://p2.qhimg.com/bdm/1024_768_85/t012d3379fc93c49a46.jpg",
+			"http://p2.qhimg.com/bdm/1024_768_85/t01c67f3cb632e199e2.jpg",
+			"http://p5.qhimg.com/bdm/1024_768_85/t011d092e5d6e47fb4d.jpg",
+			"http://p1.qhimg.com/bdm/1024_768_85/t0141e91218eb632bc7.jpg",
+			"http://p3.qhimg.com/bdm/1024_768_85/t0176412402245035ff.jpg",
+			"http://p7.qhimg.com/bdm/1024_768_85/t0171971c7b76800303.jpg"
+		]
+		var random = Math.floor((Math.random() * img.length));
+		return img[random];
+	}
+	//添加卡片
+	function addCard(array) {
+		var card = $("#card");
+		var data = "地址：" + array[0] + "</br>" + "端口：" + array[1] + "</br>" + "密码：" + array[2] + "</br>" + "混淆：" + array[3] + "</br>" + "加密：" + array[4] + "</br>" + "协议：" + array[5];
+		card.append("<div class=\"card\" style=\"width: 18rem;\">" +
+			"<img src=\"" + randomImg() + "\" class=\"card-img-top\">" +
+			"<div class=\"card-body\">" +
+			"<h5 class=\"card-title\">" + "节点" + "</h5>" +
+			"<p class=\"card-text\">" + data + "</p>" +
+			"<div class=\"btn-group\">" +
+			"<button type=\"button\" class=\"btn btn-xs btn-primary\" onclick=\"link(this)\">链接</button>" +
+			"<button type=\"button\" class=\"btn btn-xs btn-info\" onclick=\"qrcode(this)\">二维码</button>" +
+			//			"<button type=\"button\" class=\"btn btn-xs btn-success speed\" onclick=\"speed(this)\">测速</button>" +
+			"</div>" +
+			"<p class=\"link\"  style=\"display: none\">" + encodeSSR(array) + "</p>" +
+			"<p class=\"ip\"  style=\"display: none\">" + array[0] + "</p>" +
+			"</div>" +
+			"</div>");
+	}
+	//解码ssr链接
+	function decodeSSR(ssr) {
+		ssr = BASE64.urlsafe_decode(ssr).split("/?")[0].split(":");
+
+		var server = ssr[0];
+		var server_port = ssr[1];
+		var password = BASE64.urlsafe_decode(ssr[5]);
+		var obfs = ssr[4];
+		var method = ssr[3]
+		var protocol = ssr[2];
+		var array = new Array(server, server_port, password, obfs, method, protocol);
+
+		return array;
+	}
+	//编码ssr链接
+	function encodeSSR(array) {
+		array[2] = BASE64.encode(array[2]);
+		var remarks = BASE64.encode(array[0]);
+		var ssr = "ssr://" + BASE64.encode(array[0] + ':' + array[1] + ':' + array[5] + ':' + array[4] + ':' + array[3] + ':' + array[2]+"/?obfsparam=&protoparam=&remarks=" + remarks +"&group=");
+		return ssr;
+	}
+	/* 		function getLocation(ip){
+				var location
+				$.ajax({
+					async: false,
+					type: "GET",
+					url: "https://api.mxecy.cn/request.php?url=http%3a%2f%2fip.taobao.com%2fservice%2fgetIpInfo.php%3fip%3d" + ip,
+					dataType: "json",
+					cache: false,
+					success: function (response) {
+						location=response.data.country;
+					}
+				});
+				if(location==""){
+					location = "未知";
+				}
+				return location;
+			} */
+	//test url:https://raw.githubusercontent.com/ssrsub/ssr/master/ssrsub
+	//服务器获取信息
+	function getData(url) {
+		var links = "";
+		$.ajax({
+			async: false,
+			type: "GET",  //默认get
+			url: api + encodeURI(url),  //默认当前页
+			dataType: "text",
+			cache: false,
+			beforeSend: function () { }, //请求发送前回调,常用验证
+			success: function (response) {  //请求成功回调
+				// console.log(response);
+				var ssrlink = BASE64.urlsafe_decode(response).split("ssr://");				// 注意：此处拆分字符串第一个元素为空
+				links = ssrlink;
+			},
+			error: function (e) {  //请求超时回调
+				if (e.statusText == "timeout") {
+					alert("请求超时");
+				}
+			},
+			complete: function () { }, //无论请求是成功还是失败都会执行的回调，常用全局成员的释放，或者页面状态的重置
+		});
+
+		return links;
+	}
+	$(function () {
+
+
+		var url;
+		//提交按钮点击事件
+		$("#submit").click(function () {
+			url = $("#url").val();
+			var array;
+			var reg = /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;	//正则判断你是否为网址
+			if (reg.test(url)) {	//如果是网址执行的事件。
+				var ssr = getData(url);
+				for (var i = 1; i < ssr.length; i++) {
+					array = decodeSSR(ssr[i]);
+					addCard(array);
+				}
+			} else {	//如果不是网址默认当做订阅解析
+				var ssrlink = BASE64.urlsafe_decode(url).split("ssr://");
+				for(var i = 1;i<ssrlink.length;i++){
+					array = decodeSSR(ssrlink[i]);
+					addCard(array);
+				}
+			}
+		});
+
+	})
+</script>
+
+</html>
